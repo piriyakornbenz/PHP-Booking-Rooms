@@ -3,8 +3,8 @@
     session_start();
     require('./components/count.php');
 
-    if (isset($_SESSION['login'])) {
-        $user_id = $_SESSION['login'];
+    if (isset($_SESSION['admin_login'])) {
+        $user_id = $_SESSION['admin_login'];
     }else {
         header('location: login.php');
         exit();
@@ -57,7 +57,7 @@
             <form id='room_select_form'>
                 <div class='row d-flex justify-content-start mb-4'>
                     <div class='col-md-3 text-start'>
-                        <label class='form-label'>Select room</label>
+                        <label class='form-label text-primary fw-bolder'>Please select room *</label>
                         <select class='form-select bg-light shadow-sm' id='room_select' name='room'>
                             '$rooms'
                         </select>
@@ -102,17 +102,28 @@
             if ($dayName == 'saturday' || $dayName == 'sunday') {
                 $calendar .= "<td class='$today text-center'><h4>$currentDayRel</h4><button class='btn btn-secondary btn-sm' disabled>Holiday</button></td>";
             } elseif ($date < date('Y-m-d')) {
-                $calendar .= "<td class='$today text-center'><h4>$currentDayRel</h4><button class='btn btn-secondary btn-sm' disabled>N/A</button></td>";
+                $calendar .= "<td class='$today text-center'><h4>$currentDayRel</h4><a href='view_admin.php?date=" . $date . "&room=" . $room . "' class='btn btn-danger btn-sm'>View</a></td>";
             } else {
                 $totalbooking = checkSlot($conn, $date, $room);
                 $slotCount = slotCount();
-                $available = $slotCount-$totalbooking;
+                $available = $slotCount - $totalbooking;
 
                 if ($totalbooking == $slotCount) {
                     $calendar .= "<td class='$today text-center'><h4>$currentDayRel</h4><a href='booking_admin.php?date=" . $date . "' class='btn btn-danger btn-sm'>All Booked</a></td>";
-                    
                 }
-                $calendar .= "<td class='$today text-center'><h4>$currentDayRel</h4><a href='booking_admin.php?date=" . $date . "&room=" . $room . "' class='btn btn-success btn-sm'>Book</a><br class='d-block d-lg-none'> <small class='text-success'><i>$available left</i></small></td>";
+                
+                if ($date == date('Y-m-d')) {
+                    if (isset($_SESSION['count_expired_time'])) {
+                        $count_expired_time = $_SESSION['count_expired_time'];
+                    }else {
+                        $count_expired_time = 0;
+                    }
+                    
+                    $available = $slotCount - $count_expired_time;
+                    $calendar .= "<td class='$today text-center'><h4>$currentDayRel</h4><a href='booking_admin.php?date=" . $date . "&room=" . $room . "' class='btn btn-success btn-sm'>Book</a><br class='d-block d-lg-none'> <small class='text-success'><i>$available left</i></small></td>";
+                }else {
+                    $calendar .= "<td class='$today text-center'><h4>$currentDayRel</h4><a href='booking_admin.php?date=" . $date . "&room=" . $room . "' class='btn btn-success btn-sm'>Book</a><br class='d-block d-lg-none'> <small class='text-success'><i>$available left</i></small></td>";
+                }
             }
 
             $currentDay++;

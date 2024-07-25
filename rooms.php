@@ -3,8 +3,8 @@
     session_start();
     require('./config.php');
 
-    if (isset($_SESSION['login'])) {
-        $employee_id = $_SESSION['login'];
+    if (isset($_SESSION['admin_login'])) {
+        $employee_id = $_SESSION['admin_login'];
     }else {
         header('location: login.php');
         exit();

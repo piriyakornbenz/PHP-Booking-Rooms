@@ -3,8 +3,8 @@
     session_start();
     require('./config.php');
 
-    if (isset($_SESSION['login'])) {
-        $employee_id = $_SESSION['login'];
+    if (isset($_SESSION['admin_login'])) {
+        $employee_id = $_SESSION['admin_login'];
     }else {
         header('location: login.php');
         exit();
@@ -51,16 +51,28 @@
             <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
                 <div class="d-flex flex-column h-100 justify-content-between">
                     <div class="position-sticky pt-3">
-                        <div class="pt-2 px-2 text-center">
+                    <div class="pt-2 px-2 text-center">
                             <a href="/" class="text-white mt-2 text-decoration-none">
                                 <i class="fa-solid fa-database me-2"></i>
-                                <span class="fs-5">Booking Room Web</span>
+                                <span class="fs-5">Dashboard</span>
                             </a>
                             <hr class="text-white">
                         </div>
                         <ul class="nav nav-pills flex-column mb-auto">
                             <li class="nav-item mb-2">
                                 <a href="dashboard.php" class="nav-link text-white">
+                                    <i class="fa-solid fa-calendar-days me-2"></i>
+                                    <span><small>Calendar</small></span>
+                                </a>
+                            </li>
+                            <li class="nav-item mb-2">
+                                <a href="mybooking_admin.php" class="nav-link text-white">
+                                    <i class="fa-solid fa-calendar-check me-2"></i>
+                                    <span><small>My Booking</small></span>
+                                </a>
+                            </li>
+                            <li class="nav-item mb-2">
+                                <a href="employee.php" class="nav-link text-white">
                                     <i class="fa-solid fa-users me-2"></i>
                                     <span><small>Employee</small></span>
                                 </a>
@@ -95,12 +107,12 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <nav aria-label="breadcrumb" class="bg-light mt-4 rounded">
                     <ol class="breadcrumb p-2">
-                        <li class="breadcrumb-item"><a href="dashboard.php">Employee</a></li>
-                        <li class="breadcrumb-item active">Add Employee</li>
+                        <li class="breadcrumb-item"><a href="rooms.php">Rooms</a></li>
+                        <li class="breadcrumb-item active">Add Rooms</li>
                     </ol>
                 </nav>
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-2 mb-2 border-bottom">
-                    <h2>Add Employee</h2>
+                <div class="pt-2 pb-2 mb-2 border-bottom">
+                    <h2 class="text-center">Add Rooms</h2>
                     <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
                         <i class="fa-solid fa-bars"></i>
                     </button>

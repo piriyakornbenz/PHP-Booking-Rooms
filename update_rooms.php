@@ -3,8 +3,8 @@
     session_start();
     require('./config.php');
 
-    if (isset($_SESSION['login'])) {
-        $employee_id = $_SESSION['login'];
+    if (isset($_SESSION['admin_login'])) {
+        $employee_id = $_SESSION['admin_login'];
     }else {
         header('location: login.php');
         exit();
@@ -118,8 +118,8 @@
                         <li class="breadcrumb-item active">Update Rooms</li>
                     </ol>
                 </nav>
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-2 mb-2 border-bottom">
-                    <h2>Update Rooms</h2>
+                <div class="pt-2 pb-2 mb-2 border-bottom">
+                    <h2 class="text-center">Update Rooms</h2>
                     <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
                         <i class="fa-solid fa-bars"></i>
                     </button>

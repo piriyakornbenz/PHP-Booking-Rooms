@@ -3,8 +3,8 @@
 session_start();
 require('./config.php');
 
-if (isset($_SESSION['login'])) {
-    $user_id = $_SESSION['login'];
+if (isset($_SESSION['user_login'])) {
+    $user_id = $_SESSION['user_login'];
 
     $stmt = $conn->prepare("SELECT * FROM employee WHERE id=:id");
     $stmt->bindParam(':id', $user_id);
@@ -168,6 +168,7 @@ function timeslot($duration, $start, $end)
                     <hr>
                     <div class="row ">
 
+                        <!-- alert success and error -->
                         <div class="col-md-12">
                             <?php if (isset($_SESSION['success'])) { ?>
                                 <div class="alert alert-success">
@@ -177,8 +178,6 @@ function timeslot($duration, $start, $end)
                                     ?>
                                 </div>
                             <?php } ?>
-                        </div>
-                        <div class="col-md-12">
                             <?php if (isset($_SESSION['error'])) { ?>
                                 <div class="alert alert-danger">
                                     <?php
@@ -188,33 +187,46 @@ function timeslot($duration, $start, $end)
                                 </div>
                             <?php } ?>
                         </div>
-
+                        
                         <?php
+                        $count_expired_time = 0;
                         $timeslot = timeslot($duration, $start, $end);
+                        $data_room = $conn->prepare("SELECT * FROM rooms WHERE id = :room_id ");
+                        $data_room->bindParam(':room_id', $room);
+                        $data_room->execute();
+                        $data_room_row = $data_room->fetch();
+                        
                         foreach ($timeslot as $ts) {
                             $stmt = $conn->prepare("SELECT * FROM bookings WHERE date = :date AND timeslot = :timeslot");
                             $stmt->bindParam(':date', $date);
                             $stmt->bindParam(':timeslot', $ts);
                             $stmt->execute();
                             $row = $stmt->fetchAll();
+                            
+                            $currentDate = date("Y-m-d");
+                            $currentTime = date('h:iA');
+                            list($timeslotStart, $timeslotEnd) = explode(' - ', $ts);
+                            $currentTime24 = date('H:iA', strtotime($currentTime));
                         ?>
                             <div class="col-6 col-md-3 d-flex justify-content-center">
                                 <div class="mb-4">
-                                    <?php if (in_array($ts, $booking)) { ?>
-                                        <button class="btn btn-danger p-4 booked" data-date="<?= date('d F Y', strtotime($date)) ?>" data-timeslot="<?= $ts ?>" data-heading="<?= $row[0]['heading'] ?>" data-name="<?= $row[0]['name'] ?>" data-email="<?= $row[0]['email'] ?>" data-bs-toggle="modal" data-bs-target="#exampleModal2"><?= $ts ?></button>
-                                    <?php } else { ?>
-                                        <button class="btn btn-success p-4 book" data-date="<?= date('d F Y', strtotime($date)) ?>" data-timeslot="<?= $ts ?>" data-name="<?= $user['name'] ?>" data-email="<?= $user['email'] ?>" data-bs-toggle="modal" data-bs-target="#exampleModal"><?= $ts ?></button>
+                                    <?php if (in_array($ts, $booking)) { $count_expired_time++?>
+                                        <button class="btn btn-danger p-4 booked" data-date="<?= date('d F Y', strtotime($date)) ?>" data-timeslot="<?= $ts ?>" data-heading="<?= $row[0]['heading'] ?>" data-name="<?= $row[0]['name'] ?>" data-email="<?= $row[0]['email'] ?>" data-room="<?= $data_room_row['room_name'] ?>" data-bs-toggle="modal" data-bs-target="#exampleModal2"><?= $ts ?></button>
+                                    <?php }else if ($date == $currentDate && $currentTime24 > $timeslotEnd) { $count_expired_time++?>
+                                        <button class="btn btn-secondary p-4" disabled><?= $ts ?></button>
+                                    <?php }else { ?>
+                                        <button class="btn btn-success p-4 book" data-date="<?= date('d F Y', strtotime($date)) ?>" data-timeslot="<?= $ts ?>" data-name="<?= $user['name'] ?>" data-email="<?= $user['email'] ?>" data-room="<?= $data_room_row['room_name'] ?>" data-bs-toggle="modal" data-bs-target="#exampleModal"><?= $ts ?></button>
                                     <?php } ?>
                                 </div>
                             </div>
-                        <?php } ?>
+
+                        <?php } $_SESSION['count_expired_time'] = $count_expired_time; ?>
 
                     </div>
                 </div>
             </main>
         </div>
     </div>
-
 
     <!-- modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -237,6 +249,10 @@ function timeslot($duration, $start, $end)
                         <div class="mb-3">
                             <label class="col-form-label">Email:</label>
                             <input type="email" class="form-control bg-light" name="email" id="email" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="col-form-label">Room:</label>
+                            <input type="text" class="form-control bg-light" name="room" id="room" readonly>
                         </div>
                         <div class="mb-3">
                             <label class="col-form-label">Heading:</label>
@@ -274,6 +290,10 @@ function timeslot($duration, $start, $end)
                             <input type="email" class="form-control bg-light" id="email2" readonly>
                         </div>
                         <div class="mb-3">
+                            <label class="col-form-label">Room:</label>
+                            <input type="text" class="form-control bg-light" id="room2" readonly>
+                        </div>
+                        <div class="mb-3">
                             <label class="col-form-label">Heading:</label>
                             <input type="text" class="form-control bg-light" id="heading2" readonly>
                         </div>
@@ -294,10 +314,12 @@ function timeslot($duration, $start, $end)
             var date = $(this).attr("data-date");
             var name = $(this).attr("data-name");
             var email = $(this).attr("data-email");
+            var room = $(this).attr("data-room");
             $("#slot").html(date);
             $("#timeslot").val(timeslot);
             $("#name").val(name);
             $("#email").val(email);
+            $("#room").val(room);
         })
 
         $(".booked").click(function() {
@@ -306,11 +328,13 @@ function timeslot($duration, $start, $end)
             var heading = $(this).attr("data-heading");
             var name = $(this).attr("data-name");
             var email = $(this).attr("data-email");
+            var room = $(this).attr("data-room");
             $("#slot2").html(date);
             $("#timeslot2").val(timeslot);
             $("#heading2").val(heading);
             $("#name2").val(name);
             $("#email2").val(email);
+            $("#room2").val(room);
         })
     </script>
 </body>

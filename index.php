@@ -3,17 +3,15 @@
     session_start();
     require('./components/count.php');
 
-    if (isset($_SESSION['login'])) {
-        $employee_id = $_SESSION['login'];
-    }else {
+    if (!isset($_SESSION['user_login'])) {
         header('location: login.php');
         exit();
     }
 
-    function build_calendar($month, $year, $room)
-    {
+    function build_calendar($month, $year, $room) {
+
         require('./config.php');
-        
+
         // create option rooms
         $stmt = $conn->prepare("SELECT * FROM rooms");
         $rooms = "";
@@ -21,7 +19,7 @@
         if ($stmt->execute()) {
             if ($stmt->rowCount() > 0) {
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                    $rooms .= "<option value=".$row['id'].">".$row['room_name']."</option>";
+                    $rooms .= "<option value=" . $row['id'] . ">" . $row['room_name'] . "</option>";
                 }
             }
         }
@@ -33,6 +31,7 @@
         $monthName = $dateComponents['month'];
         $dayOfWeek = $dateComponents['wday'];
 
+        // prev and next month, year
         $prevMonth = $month - 1;
         $nextMonth = $month + 1;
         $prevYear = $year;
@@ -54,19 +53,19 @@
         $calendar .= "<a class='btn btn-primary' href='?month=" . date('m') . "&year=" . date('Y') . "'>Current Month</a> ";
         $calendar .= "<a class='btn btn-secondary' href='?month=$nextMonth&year=$nextYear'>Next Month ></a>";
         $calendar .= "</div><br>
-            <form id='room_select_form'>
-                <div class='row d-flex justify-content-start mb-4'>
-                    <div class='col-md-3 text-start'>
-                        <label class='form-label'>Select room</label>
-                        <select class='form-select bg-light shadow-sm' id='room_select' name='room'>
-                            '$rooms'
-                        </select>
-                        <input type='hidden' name='month' value='$month'>
-                        <input type='hidden' name='year' value='$year'>
+                <form id='room_select_form'>
+                    <div class='row d-flex justify-content-start mb-4'>
+                        <div class='col-md-3 text-start'>
+                            <label class='form-label text-primary fw-bolder'>Please select room *</label>
+                            <select class='form-select bg-light shadow-sm' id='room_select' name='room'>
+                                '$rooms'
+                            </select>
+                            <input type='hidden' name='month' value='$month'>
+                            <input type='hidden' name='year' value='$year'>
+                        </div>
                     </div>
-                </div>
-            </form>
-        ";
+                </form>
+            ";
         $calendar .= "<table class='table table-bordered'>";
         $calendar .= "<tr>";
 
@@ -83,7 +82,6 @@
         }
 
         $currentDay = 1;
-
         $month = str_pad($month, 2, "0", STR_PAD_LEFT);
 
         while ($currentDay <= $numberDays) {
@@ -95,9 +93,8 @@
             $currentDayRel = str_pad($currentDay, 2, "0", STR_PAD_LEFT);
             $date = "$year-$month-$currentDayRel";
             $today = $date == date('Y-m-d') ? 'bg-info' : '';
-
             $dayName = strtolower(date('l', strtotime($date)));
-            
+
             // show button Holiday, N/A, All Booked and Book
             if ($dayName == 'saturday' || $dayName == 'sunday') {
                 $calendar .= "<td class='$today text-center'><h4>$currentDayRel</h4><button class='btn btn-secondary btn-sm' disabled>Holiday</button></td>";
@@ -106,13 +103,25 @@
             } else {
                 $totalbooking = checkSlot($conn, $date, $room);
                 $slotCount = slotCount();
-                $available = $slotCount-$totalbooking;
+                $available = $slotCount - $totalbooking;
 
                 if ($totalbooking == $slotCount) {
                     $calendar .= "<td class='$today text-center'><h4>$currentDayRel</h4><a href='booking.php?date=" . $date . "' class='btn btn-danger btn-sm'>All Booked</a></td>";
-                    
                 }
-                $calendar .= "<td class='$today text-center'><h4>$currentDayRel</h4><a href='booking.php?date=" . $date . "&room=" . $room . "' class='btn btn-success btn-sm'>Book</a><br class='d-block d-lg-none'> <small class='text-success'><i>$available left</i></small></td>";
+                
+                if ($date == date('Y-m-d')) {
+                    if (isset($_SESSION['count_expired_time'])) {
+                        $count_expired_time = $_SESSION['count_expired_time'];
+                    }else {
+                        $count_expired_time = 0;
+                    }
+                    
+                    $available = $slotCount - $count_expired_time;
+                    $calendar .= "<td class='$today text-center'><h4>$currentDayRel</h4><a href='booking.php?date=" . $date . "&room=" . $room . "' class='btn btn-success btn-sm'>Book</a><br class='d-block d-lg-none'> <small class='text-success'><i>$available left</i></small></td>";
+                }else {
+                    $calendar .= "<td class='$today text-center'><h4>$currentDayRel</h4><a href='booking.php?date=" . $date . "&room=" . $room . "' class='btn btn-success btn-sm'>Book</a><br class='d-block d-lg-none'> <small class='text-success'><i>$available left</i></small></td>";
+                }
+
             }
 
             $currentDay++;
@@ -133,18 +142,18 @@
     }
 
     // count booking by date and room_id
-    function checkSlot($conn, $date, $room) {
-        $stmt = $conn->prepare("SELECT COUNT(*) as totalbooking FROM bookings WHERE date = :date AND room_id = :room_id");
+    function checkSlot($conn, $date, $room)
+    {
+        $stmt = $conn->prepare("SELECT COUNT(*) as totalbooking_count FROM bookings WHERE date = :date AND room_id = :room_id");
         $stmt->bindParam(':date', $date);
         $stmt->bindParam(':room_id', $room);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $result['totalbooking'];
+        return $result['totalbooking_count'];
     }
 
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -201,11 +210,11 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <nav aria-label="breadcrumb" class="bg-light mt-4 rounded">
                     <ol class="breadcrumb p-2">
-                        <li class="breadcrumb-item"><a href="index.php">Calendar</a></li>
+                        <li class="breadcrumb-item active">Calendar</li>
                     </ol>
                 </nav>
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-2 mb-2 border-bottom">
-                    <h2>Calendar</h2>
+                <div class="pt-2 pb-2 mb-2 border-bottom">
+                    <h2 class="text-center">Calendar</h2>
                     <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
                         <i class="fa-solid fa-bars"></i>
                     </button>
@@ -213,6 +222,7 @@
                 <div class="container shadow rounded">
                     <div class="row">
                         <div class="col-md-12">
+                            <!-- success alert -->
                             <?php if (isset($_SESSION['success'])) { ?>
                                 <div class="alert alert-success mt-2">
                                     <?php
@@ -221,24 +231,26 @@
                                     ?>
                                 </div>
                             <?php } ?>
+
                             <?php
-                            $dateComponents = getdate();
-                            if (isset($_GET['month']) && isset($_GET['year'])) {
-                                $month = $_GET['month'];
-                                $year = $_GET['year'];
-                            } else {
-                                $month = $dateComponents['mon'];
-                                $year = $dateComponents['year'];
-                            }
+                                $dateComponents = getdate();
+                                if (isset($_GET['month']) && isset($_GET['year'])) {
+                                    $month = $_GET['month'];
+                                    $year = $_GET['year'];
+                                } else {
+                                    $month = $dateComponents['mon'];
+                                    $year = $dateComponents['year'];
+                                }
 
-                            if (isset($_GET['room'])) {
-                                $room = $_GET['room'];
-                            }else {
-                                $room = 1;
-                            }
+                                if (isset($_GET['room'])) {
+                                    $room = $_GET['room'];
+                                } else {
+                                    $room = 1;
+                                }
 
-                            echo build_calendar($month, $year, $room);
+                                echo build_calendar($month, $year, $room);
                             ?>
+
                         </div>
                     </div>
                 </div>
@@ -257,4 +269,5 @@
     </script>
 
 </body>
+
 </html>

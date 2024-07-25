@@ -16,11 +16,11 @@
             if (password_verify($password, $row['password'])) {
                 
                 if ($row['role'] == "employee") {
-                    $_SESSION['login'] = $row['id'];
+                    $_SESSION['user_login'] = $row['id'];
                     header('location: index.php');
                     exit;
                 }else{
-                    $_SESSION['login'] = $row['id'];
+                    $_SESSION['admin_login'] = $row['id'];
                     header('location: dashboard.php');
                     exit;
                 }
