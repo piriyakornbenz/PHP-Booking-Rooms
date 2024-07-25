@@ -86,11 +86,11 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <nav aria-label="breadcrumb" class="bg-light mt-4 rounded">
                     <ol class="breadcrumb p-2">
-                        <li class="breadcrumb-item"><a href="employee.php">Employee</a></li>
+                        <li class="breadcrumb-item active">Employee</li>
                     </ol>
                 </nav>
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-2 mb-2 border-bottom">
-                    <h2>Employee</h2>
+                <div class="pt-2 pb-2 mb-2 border-bottom">
+                    <h2 class="text-center">Employee</h2>
                     <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
                         <i class="fa-solid fa-bars"></i>
                     </button>
@@ -100,7 +100,7 @@
                         <div class="col-md-12">
                             <div class="d-flex justify-content-between align-items-center">
                                 <h4>Table Employee</h4>
-                                <a href="add_employee.php" class="btn btn-primary my-4">Add Employee</a>
+                                <a href="add_employee.php" class="btn btn-primary my-4"><i class="fa-solid fa-plus"></i> Add Employee</a>
                             </div>
 
                             <?php if(isset($_SESSION['success'])) { ?>
@@ -129,6 +129,7 @@
                                         <th scope="col">Name</th>
                                         <th scope="col">Email</th>
                                         <th scope="col">Role</th>
+                                        <th scope="col">Booking</th>
                                         <th scope="col">Edit</th>
                                         <th scope="col">Delete</th>
                                     </tr>
@@ -147,8 +148,9 @@
                                         <td class="align-middle"><?= $row['name'] ?></td>
                                         <td class="align-middle"><?= $row['email'] ?></td>
                                         <td class="align-middle"><?= $row['role'] ?></td>
-                                        <td class="align-middle"><a href="update_employee.php?update_id=<?= $row['id'] ?>" class="btn btn-warning">edit</a></td>
-                                        <td class="align-middle"><a href="delete_employee.php?delete_id=<?= $row['id'] ?>" class="btn btn-danger" onclick="return confirm('Are you sure to delete?')">delete</a></td>
+                                        <td class="align-middle"><a href="view_employee.php?user_id=<?= $row['id'] ?>" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> view</a></td>
+                                        <td class="align-middle"><a href="update_employee.php?update_id=<?= $row['id'] ?>" class="btn btn-warning"><i class="fa-regular fa-pen-to-square"></i> edit</a></td>
+                                        <td class="align-middle"><a href="delete_employee.php?delete_id=<?= $row['id'] ?>" class="btn btn-danger" onclick="return confirm('Are you sure to delete?')"><i class="fa-solid fa-trash"></i> delete</a></td>
                                     </tr>
                                     <?php } ?>
                                     </tbody>

@@ -220,11 +220,11 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <nav aria-label="breadcrumb" class="bg-light mt-4 rounded">
                     <ol class="breadcrumb p-2">
-                        <li class="breadcrumb-item"><a href="dashboard.php">Calendar</a></li>
+                        <li class="breadcrumb-item active">Calendar</li>
                     </ol>
                 </nav>
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-2 mb-2 border-bottom">
-                    <h2>Calendar</h2>
+                <div class="pt-2 pb-2 mb-2 border-bottom">
+                    <h2 class="text-center">Calendar</h2>
                     <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
                         <i class="fa-solid fa-bars"></i>
                     </button>

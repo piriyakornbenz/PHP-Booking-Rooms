@@ -86,11 +86,11 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <nav aria-label="breadcrumb" class="bg-light mt-4 rounded">
                     <ol class="breadcrumb p-2">
-                        <li class="breadcrumb-item"><a href="setting.php">Setting</a></li>
+                        <li class="breadcrumb-item active">Setting</li>
                     </ol>
                 </nav>
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-2 mb-2 border-bottom">
-                    <h2>Setting</h2>
+                <div class="pt-2 pb-2 mb-2 border-bottom">
+                    <h2 class="text-center">Setting</h2>
                     <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
                         <i class="fa-solid fa-bars"></i>
                     </button>
@@ -145,7 +145,7 @@
                                         <td class="align-middle"><?= $row['start'] ?></td>
                                         <td class="align-middle"><?= $row['end'] ?></td>
                                         <td class="align-middle"><?= $row['duration'] ?> minutes </td>
-                                        <td class="align-middle"><a href="update_slottime.php?update_id=<?= $row['id'] ?>" class="btn btn-warning">edit</a></td>
+                                        <td class="align-middle"><a href="update_slottime.php?update_id=<?= $row['id'] ?>" class="btn btn-warning"><i class="fa-regular fa-pen-to-square"></i> edit</a></td>
                                     </tr>
                                     <?php } ?>
                                     </tbody>

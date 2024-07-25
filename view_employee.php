@@ -4,10 +4,14 @@ session_start();
 require('./config.php');
 
 if (isset($_SESSION['login'])) {
-    $user_id = $_SESSION['login'];
+    
 } else {
     header('location: login.php');
     exit();
+}
+
+if (isset($_GET['user_id'])) {
+    $user_id = $_GET['user_id'];
 }
 
 $currentDate = date('Y-m-d');
@@ -48,13 +52,13 @@ $currentTime = date('h:iA');
                                 </a>
                             </li>
                             <li class="nav-item mb-2">
-                                <a href="mybooking_admin.php" class="nav-link text-white active">
+                                <a href="mybooking_admin.php" class="nav-link text-white">
                                     <i class="fa-solid fa-calendar-check me-2"></i>
                                     <span><small>My Booking</small></span>
                                 </a>
                             </li>
                             <li class="nav-item mb-2">
-                                <a href="employee.php" class="nav-link text-white">
+                                <a href="employee.php" class="nav-link text-white active">
                                     <i class="fa-solid fa-users me-2"></i>
                                     <span><small>Employee</small></span>
                                 </a>
@@ -87,20 +91,19 @@ $currentTime = date('h:iA');
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <nav aria-label="breadcrumb" class="bg-light mt-4 rounded">
                     <ol class="breadcrumb p-2">
-                        <li class="breadcrumb-item active">My Booking</li>
-                        <!-- <li class="breadcrumb-item active"><a href="" class="text-decoration-none text-secondary">Booking</a></li> -->
+                        <li class="breadcrumb-item"><a href="employee.php">Employee</a></li>
+                        <li class="breadcrumb-item active">View booking</li>
                     </ol>
                 </nav>
                 <div class="pt-2 pb-2 mb-2 border-bottom">
-                    <h2 class="text-center">My Booking</h2>
+                    <h2 class="text-center">View Booking</h2>
                     <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
                         <i class="fa-solid fa-bars"></i>
                     </button>
                 </div>
                 <div class="container shadow rounded">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h4>Table My Booking</h4>
-                        <a href="dashboard.php" class="btn btn-primary my-4"><i class="fa-solid fa-plus"></i> Add Booking</a>
+                        <h4 class="my-4">Table Booking</h4>
                     </div>
                     <div class="row ">
 
@@ -133,7 +136,6 @@ $currentTime = date('h:iA');
                                         <th scope="col">Timeslot</th>
                                         <th scope="col">Heading</th>
                                         <th scope="col">Room</th>
-                                        <th scope="col">Cancel</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -158,11 +160,6 @@ $currentTime = date('h:iA');
                                                 <td class="align-middle"><?= $row['timeslot'] ?></td>
                                                 <td class="align-middle"><?= $row['heading'] ?></td>
                                                 <td class="align-middle"><?= $row['room_name'] ?></td>
-                                                <?php if ($row['date'] < $currentDate || ($row['date'] == $currentDate && $currentTime24 > $timeslotEnd)) { ?>
-                                                    <td class="align-middle"><a class="btn btn-secondary disabled"><i class="fa-regular fa-calendar-check"></i> finished</a></td>
-                                                <?php } else { ?>
-                                                    <td class="align-middle"><a href="cancel_admin.php?delete_id=<?= $row['id'] ?>" class="btn btn-danger" onclick="return confirm('Are you sure to cancel?')"><i class="fa-solid fa-xmark"></i> cancel</a></td>
-                                                <?php } ?>
                                             </tr>
                                         <?php }
                                     } else { ?>

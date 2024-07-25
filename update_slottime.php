@@ -114,7 +114,7 @@ if (isset($_POST['update'])) {
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <nav aria-label="breadcrumb" class="bg-light mt-4 rounded">
                     <ol class="breadcrumb p-2">
-                        <li class="breadcrumb-item"><a href="setting.php">Slottime</a></li>
+                        <li class="breadcrumb-item"><a href="setting.php">Setting</a></li>
                         <li class="breadcrumb-item active">Update Slottime</li>
                     </ol>
                 </nav>

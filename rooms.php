@@ -86,11 +86,11 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <nav aria-label="breadcrumb" class="bg-light mt-4 rounded">
                     <ol class="breadcrumb p-2">
-                        <li class="breadcrumb-item"><a href="rooms.php">Rooms</a></li>
+                        <li class="breadcrumb-item active">Rooms</li>
                     </ol>
                 </nav>
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-2 mb-2 border-bottom">
-                    <h2>Rooms</h2>
+                <div class="pt-2 pb-2 mb-2 border-bottom">
+                    <h2 class="text-center">Rooms</h2>
                     <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
                         <i class="fa-solid fa-bars"></i>
                     </button>
@@ -100,7 +100,7 @@
                         <div class="col-md-12">
                             <div class="d-flex justify-content-between align-items-center">
                                 <h4>Table Rooms</h4>
-                                <a href="add_rooms.php" class="btn btn-primary my-4">Add Rooms</a>
+                                <a href="add_rooms.php" class="btn btn-primary my-4"><i class="fa-solid fa-plus"></i> Add Rooms</a>
                             </div>
 
                             <?php if(isset($_SESSION['success'])) { ?>
@@ -145,8 +145,8 @@
                                         <td class="align-middle"><?= $count++ ?></td>
                                         <td class="align-middle"><?= $row['room_name'] ?></td>
                                         <td class="align-middle"><?= $row['room_description'] ?></td>
-                                        <td class="align-middle"><a href="update_rooms.php?update_id=<?= $row['id'] ?>" class="btn btn-warning">edit</a></td>
-                                        <td class="align-middle"><a href="delete_rooms.php?delete_id=<?= $row['id'] ?>" class="btn btn-danger" onclick="return confirm('Are you sure to delete?')">delete</a></td>
+                                        <td class="align-middle"><a href="update_rooms.php?update_id=<?= $row['id'] ?>" class="btn btn-warning"><i class="fa-regular fa-pen-to-square"></i> edit</a></td>
+                                        <td class="align-middle"><a href="delete_rooms.php?delete_id=<?= $row['id'] ?>" class="btn btn-danger" onclick="return confirm('Are you sure to delete?')"><i class="fa-solid fa-trash"></i> delete</a></td>
                                     </tr>
                                     <?php } ?>
                                     </tbody>
